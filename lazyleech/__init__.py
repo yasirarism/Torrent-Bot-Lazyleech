@@ -10,10 +10,10 @@ BOT_TOKEN = os.environ.get('BOT_TOKEN', '1438892370:AAEbrvF36Snlg_adSt1I7Zakj5X7
 TESTMODE = os.environ.get('TESTMODE')
 TESTMODE = TESTMODE and TESTMODE != '0'
 
-EVERYONE_CHATS = os.environ.get('EVERYONE_CHATS', 617426792)
-EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else []
-ADMIN_CHATS = os.environ.get('ADMIN_CHATS', 617426792)
-ADMIN_CHATS = list(map(int, ADMIN_CHATS.split(' '))) if ADMIN_CHATS else []
+EVERYONE_CHATS = os.environ.get('EVERYONE_CHATS')
+EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else [617426792]
+ADMIN_CHATS = os.environ.get('ADMIN_CHATS)
+ADMIN_CHATS = list(map(int, ADMIN_CHATS.split(' '))) if ADMIN_CHATS else [617426792]
 ALL_CHATS = EVERYONE_CHATS + ADMIN_CHATS
 
 PROGRESS_UPDATE_DELAY = int(os.environ.get('PROGRESS_UPDATE_DELAY', 5))
