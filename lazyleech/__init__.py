@@ -11,7 +11,7 @@ TESTMODE = os.environ.get('TESTMODE')
 TESTMODE = TESTMODE and TESTMODE != '0'
 
 EVERYONE_CHATS = os.environ.get('EVERYONE_CHATS')
-EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else []
+EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split('617426792'))) if EVERYONE_CHATS else []
 ADMIN_CHATS = os.environ.get('ADMIN_CHATS)
 ADMIN_CHATS = list(map(int, ADMIN_CHATS.split('617426792'))) if ADMIN_CHATS else []
 ALL_CHATS = EVERYONE_CHATS + ADMIN_CHATS
