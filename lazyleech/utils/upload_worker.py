@@ -69,8 +69,8 @@ async def _upload_worker(client, message, reply, torrent_info, user_id, flags):
                 with zipfile.ZipFile(filepath, 'x') as zipf:
                     for file in torrent_info['files']:
                         zipf.write(file['path'], file['path'].replace(os.path.join(torrent_info['dir'], ''), '', 1))
-            await asyncio.gather(reply.edit_text('Download successful, zipping files...'), client.loop.run_in_executor(None, _zip_files))
-            asyncio.create_task(reply.edit_text('Download successful, uploading files...'))
+            await asyncio.gather(reply.edit_text('Download berhasil, zip files...'), client.loop.run_in_executor(None, _zip_files))
+            asyncio.create_task(reply.edit_text('Download berhasil, upload file...'))
             files[filepath] = filename
         else:
             for file in torrent_info['files']:
@@ -79,7 +79,7 @@ async def _upload_worker(client, message, reply, torrent_info, user_id, flags):
                 files[filepath] = filename
         for filepath in natsorted(files):
             sent_files.extend(await _upload_file(client, message, reply, files[filepath], filepath, ForceDocumentFlag in flags))
-    text = 'Files:\n'
+    text = 'Files kamu:\n'
     parser = pyrogram_html.HTML(client)
     quote = None
     first_index = None
@@ -102,11 +102,11 @@ async def _upload_worker(client, message, reply, torrent_info, user_id, flags):
         all_amount += 1
         text = futtext
     if not sent_files:
-        text = 'Files: None'
+        text = 'Files kamu: None'
     thing = await message.reply_text(text, quote=quote, disable_web_page_preview=True)
     if first_index is None:
         first_index = thing
-    asyncio.create_task(reply.edit_text(f'Download successful, files uploaded.\nFiles: {first_index.link}', disable_web_page_preview=True))
+    asyncio.create_task(reply.edit_text(f'Yeaayyy download berhasil, file terupload.\nFiles kamu: {first_index.link}', disable_web_page_preview=True))
 
 async def _upload_file(client, message, reply, filename, filepath, force_document):
     if not os.path.getsize(filepath):
@@ -117,7 +117,7 @@ async def _upload_file(client, message, reply, filename, filepath, force_documen
     user_watermark = os.path.join(str(user_id), 'watermark.jpg')
     user_watermarked_thumbnail = os.path.join(str(user_id), 'watermarked_thumbnail.jpg')
     file_has_big = os.path.getsize(filepath) > 2097152000
-    upload_wait = await reply.reply_text(f'Upload of {html.escape(filename)} will start in {PROGRESS_UPDATE_DELAY}s')
+    upload_wait = await reply.reply_text(f'Proses upload {html.escape(filename)} dimulai dalam {PROGRESS_UPDATE_DELAY} detik')
     upload_identifier = (upload_wait.chat.id, upload_wait.message_id)
     async with upload_tamper_lock:
         upload_waits[upload_identifier] = user_id, worker_identifier
@@ -141,7 +141,7 @@ async def _upload_file(client, message, reply, filename, filepath, force_documen
             if upload_identifier in stop_uploads:
                 return sent_files
             if split_task and not split_task.done():
-                await upload_wait.edit_text(f'Splitting {html.escape(filename)}...')
+                await upload_wait.edit_text(f'Proses memecah {html.escape(filename)}...')
                 while not split_task.done():
                     if upload_identifier in stop_uploads:
                         return sent_files
@@ -153,7 +153,7 @@ async def _upload_file(client, message, reply, filename, filepath, force_documen
                     if a:
                         async with upload_tamper_lock:
                             upload_waits.pop(upload_identifier)
-                            upload_wait = await reply.reply_text(f'Upload of {html.escape(filename)} will start in {PROGRESS_UPDATE_DELAY}s')
+                            upload_wait = await reply.reply_text(f'Proses upload {html.escape(filename)} akan dimulai dalam {PROGRESS_UPDATE_DELAY} detik')
                             upload_identifier = (upload_wait.chat.id, upload_wait.message_id)
                             upload_waits[upload_identifier] = user_id, worker_identifier
                         for _ in range(PROGRESS_UPDATE_DELAY):
@@ -234,13 +234,13 @@ async def progress_callback(current, total, client, reply, filename, user_id):
             upload_speed = format_bytes((total - current) / (time.time() - start_time))
         else:
             upload_speed = '0 B'
-        text = f'''Uploading {html.escape(filename)}...
+        text = f'''Mengupload {html.escape(filename)}...
 <code>{html.escape(return_progress_string(current, total))}</code>
 
-<b>Total Size:</b> {format_bytes(total)}
-<b>Uploaded Size:</b> {format_bytes(current)}
-<b>Upload Speed:</b> {upload_speed}/s
-<b>ETA:</b> {calculate_eta(current, total, start_time)}'''
+<b>📦 Ukuran :</b> <code>{format_bytes(total)}</code>
+<b>🍬 Terupload :</b> <code>{format_bytes(current)}</code>
+<b>⚡ Kecepatan :</b> <code>{upload_speed}/s</code>
+<b>⏱️ ETA :</b> <code>{calculate_eta(current, total, start_time)}</code>'''
         if prevtext != text:
             await reply.edit_text(text)
             prevtext = text
