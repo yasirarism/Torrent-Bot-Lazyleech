@@ -6,12 +6,12 @@ from pyrogram import Client
 
 API_ID = os.environ.get('API_ID', 1046625)
 API_HASH = os.environ.get('API_HASH', 'c68afc924b92d73ce27708b155f1e5b4')
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '1625232075:AAEZFyxKhImWDl1fR0FtLzPkG0iTIvZHEfw')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '1625232075:AAGljiseTZAdRaAt7rCtgL74ltuAiLUpD4I')
 TESTMODE = os.environ.get('TESTMODE')
 TESTMODE = TESTMODE and TESTMODE != '0'
 
 EVERYONE_CHATS = os.environ.get('EVERYONE_CHATS')
-EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else [617426792]
+EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else [1455886928]
 ADMIN_CHATS = os.environ.get('ADMIN_CHATS')
 ADMIN_CHATS = list(map(int, ADMIN_CHATS.split(' '))) if ADMIN_CHATS else [617426792]
 ALL_CHATS = EVERYONE_CHATS + ADMIN_CHATS
