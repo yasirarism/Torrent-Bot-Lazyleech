@@ -21,12 +21,12 @@ async def upload_worker():
         try:
             message_identifier = (reply.chat.id, reply.message_id)
             if SendAsZipFlag not in flags:
-                asyncio.create_task(reply.edit_text('Download successful, uploading files...'))
+                asyncio.create_task(reply.edit_text('Yeeeaaayyy download berhasil, meng-upload file...'))
             task = asyncio.create_task(_upload_worker(client, message, reply, torrent_info, user_id, flags))
             upload_statuses[message_identifier] = task, user_id
             await task
         except asyncio.CancelledError:
-            text = 'Your leech has been cancelled.'
+            text = 'Leech kamu telah dibatalkan.'
             await asyncio.gather(reply.edit_text(text), message.reply_text(text))
         except Exception as ex:
             preserved_logs.append((message, torrent_info, ex))
