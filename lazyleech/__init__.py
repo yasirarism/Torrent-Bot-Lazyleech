@@ -4,16 +4,16 @@ import aiohttp
 from io import BytesIO, StringIO
 from pyrogram import Client
 
-API_ID = os.environ.get('API_ID', 1046625)
-API_HASH = os.environ.get('API_HASH', 'c68afc924b92d73ce27708b155f1e5b4')
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '1625232075:AAGljiseTZAdRaAt7rCtgL74ltuAiLUpD4I')
+API_ID = os.environ.get('API_ID', 1xxxx)
+API_HASH = os.environ.get('API_HASH', 'cxxxxxxxxx')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '1xxxxxxI')
 TESTMODE = os.environ.get('TESTMODE')
 TESTMODE = TESTMODE and TESTMODE != '0'
 
 EVERYONE_CHATS = os.environ.get('EVERYONE_CHATS')
-EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else [-1001455886928]
+EVERYONE_CHATS = list(map(int, EVERYONE_CHATS.split(' '))) if EVERYONE_CHATS else [-100xxxx]
 ADMIN_CHATS = os.environ.get('ADMIN_CHATS')
-ADMIN_CHATS = list(map(int, ADMIN_CHATS.split(' '))) if ADMIN_CHATS else [617426792]
+ADMIN_CHATS = list(map(int, ADMIN_CHATS.split(' '))) if ADMIN_CHATS else [6174xxxx]
 ALL_CHATS = EVERYONE_CHATS + ADMIN_CHATS
 
 PROGRESS_UPDATE_DELAY = int(os.environ.get('PROGRESS_UPDATE_DELAY', 5))
