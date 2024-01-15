@@ -63,12 +63,13 @@ async def _upload_worker(client, message, reply, torrent_info, user_id, flags):
                 filename = torrent_info['bittorrent']['info']['name']
             else:
                 filename = os.path.basename(torrent_info['files'][0]['path'])
-            filename = filename[-251:] + '.zip'
+            filename = f'{filename[-251:]}.zip'
             filepath = os.path.join(zip_tempdir, filename)
             def _zip_files():
                 with zipfile.ZipFile(filepath, 'x') as zipf:
                     for file in torrent_info['files']:
                         zipf.write(file['path'], file['path'].replace(os.path.join(torrent_info['dir'], ''), '', 1))
+
             await asyncio.gather(reply.edit_text('Download berhasil, zip files...'), client.loop.run_in_executor(None, _zip_files))
             asyncio.create_task(reply.edit_text('Download berhasil, upload file...'))
             files[filepath] = filename
@@ -130,7 +131,8 @@ async def _upload_file(client, message, reply, filename, filepath, force_documen
                 async def _split_files():
                     splitted = await split_files(filepath, tempdir, force_document)
                     for a, split in enumerate(splitted, 1):
-                        to_upload.append((split, filename + f' (part {a})'))
+                        to_upload.append((split, f'{filename} (part {a})'))
+
                 split_task = asyncio.create_task(_split_files())
             else:
                 to_upload.append((filepath, filename))

@@ -16,10 +16,9 @@ auto_detects = dict()
 @Client.on_message(filters.chat(ALL_CHATS), group=1)
 async def autodetect(client, message):
     text = message.text
-    document = message.document
     link = None
     is_torrent = False
-    if document:
+    if document := message.document:
         if document.file_size < 1048576 and document.file_name.endswith('.torrent') and (not document.mime_type or document.mime_type == 'application/x-bittorrent'):
             os.makedirs(str(message.from_user.id), exist_ok=True)
             fd, link = tempfile.mkstemp(dir=str(message.from_user.id), suffix='.torrent')
@@ -32,8 +31,7 @@ async def autodetect(client, message):
                 link = None
                 is_torrent = False
     if not link and text:
-        match = NYAA_REGEX.match(text)
-        if match:
+        if match := NYAA_REGEX.match(text):
             link = f'https://{match.group("base")}/download/{match.group("sauce")}.torrent'
             is_torrent = True
         else:

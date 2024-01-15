@@ -17,7 +17,7 @@ def format_bytes(size):
     while size > power:
         size /= power
         n += 1
-    return f"{size:.2f} {power_labels[n]+'B'}"
+    return f"{size:.2f} {power_labels[n]}B"
 
 async def get_file_mimetype(filename):
     mimetype = mimetypes.guess_type(filename)[0]
@@ -52,8 +52,17 @@ async def split_files(filename, destination_dir, no_ffmpeg=False):
     args = ['split', '--verbose', '--numeric-suffixes=1', '--bytes=2097152000', '--suffix-length=2']
     if ext:
         args.append(f'--additional-suffix={ext}')
-    args.append(filename)
-    args.append(os.path.join(destination_dir, os.path.basename(filename)[-(248-len(ext)):] + ('-' if ext else '.') + 'part'))
+    args.extend(
+        (
+            filename,
+            os.path.join(
+                destination_dir,
+                os.path.basename(filename)[-(248 - len(ext)) :]
+                + ('-' if ext else '.')
+                + 'part',
+            ),
+        )
+    )
     proc = await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE)
     stdout, _ = await proc.communicate()
     return shlex.split(' '.join([i[14:] for i in stdout.decode().strip().split('\n')]))
@@ -77,10 +86,7 @@ async def convert_to_jpg(original, end):
 
 # https://stackoverflow.com/a/34325723
 def return_progress_string(current, total):
-    if total:
-        filled_length = int(30 * current // total)
-    else:
-        filled_length = 0
+    filled_length = int(30 * current // total) if total else 0
     return '[' + '=' * filled_length + ' ' * (30 - filled_length) + ']'
 
 # https://stackoverflow.com/a/852718

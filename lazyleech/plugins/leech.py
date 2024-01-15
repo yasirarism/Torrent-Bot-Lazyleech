@@ -23,8 +23,7 @@ async def torrent_cmd(client, message):
         flags = ()
     link = None
     reply = message.reply_to_message
-    document = message.document
-    if document:
+    if document := message.document:
         if document.file_size < 1048576 and document.file_name.endswith('.torrent') and (not document.mime_type or document.mime_type == 'application/x-bittorrent'):
             os.makedirs(str(message.from_user.id), exist_ok=True)
             fd, link = tempfile.mkstemp(dir=str(message.from_user.id), suffix='.torrent')
@@ -38,9 +37,8 @@ async def torrent_cmd(client, message):
         if text:
             link = text[0].strip()
         elif not getattr(reply, 'empty', True):
-            document = reply.document
             link = reply.text
-            if document:
+            if document := reply.document:
                 if document.file_size < 1048576 and document.file_name.endswith('.torrent') and (not document.mime_type or document.mime_type == 'application/x-bittorrent'):
                     os.makedirs(str(message.from_user.id), exist_ok=True)
                     fd, link = tempfile.mkstemp(dir=str(message.from_user.id), suffix='.torrent')
@@ -256,7 +254,11 @@ async def handle_leech(client, message, gid, reply, user_id, flags):
         try:
             await aria2_remove(session, gid)
         except Aria2Error as ex:
-            if not (ex.error_code == 1 and ex.error_message == f'Active Download not found for GID#{gid}'):
+            if (
+                ex.error_code != 1
+                or ex.error_message
+                != f'Active Download not found for GID#{gid}'
+            ):
                 raise
         finally:
             if task:
@@ -271,10 +273,10 @@ async def list_leeches(client, message):
     for i in await aria2_tell_active(session):
         if message.chat.id in ADMIN_CHATS or is_gid_owner(user_id, i['gid']):
             if i.get('bittorrent'):
-                info = i['bittorrent'].get('info')
-                if not info:
+                if info := i['bittorrent'].get('info'):
+                    tor_name = info['name']
+                else:
                     continue
-                tor_name = info['name']
             else:
                 tor_name = os.path.basename(i['files'][0]['path'])
                 if not tor_name:
@@ -302,24 +304,21 @@ async def cancel_leech(client, message):
         gid = text[0].strip()
     elif not getattr(reply, 'empty', True):
         reply_identifier = (reply.chat.id, reply.message_id)
-        task = upload_statuses.get(reply_identifier)
-        if task:
+        if task := upload_statuses.get(reply_identifier):
             task, starter_id = task
             if message.chat.id not in ADMIN_CHATS and user_id != starter_id:
                 await message.reply_text('You did not start this leech.')
             else:
                 task.cancel()
             return
-        result = progress_callback_data.get(reply_identifier)
-        if result:
+        if result := progress_callback_data.get(reply_identifier):
             if message.chat.id not in ADMIN_CHATS and user_id != result[3]:
                 await message.reply_text('You did not start this leech.')
             else:
                 stop_uploads.add(reply_identifier)
                 await message.reply_text('Cancelled!')
             return
-        starter_id = upload_waits.get(reply_identifier)
-        if starter_id:
+        if starter_id := upload_waits.get(reply_identifier):
             if message.chat.id not in ADMIN_CHATS and user_id != starter_id[0]:
                 await message.reply_text('You did not start this leech.')
             else:

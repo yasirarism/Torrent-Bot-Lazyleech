@@ -7,7 +7,7 @@ import asyncio
 import tempfile
 
 HEX_CHARACTERS = 'abcdef'
-HEXNUMERIC_CHARACTERS = HEX_CHARACTERS + '0123456789'
+HEXNUMERIC_CHARACTERS = f'{HEX_CHARACTERS}0123456789'
 
 class Aria2Error(Exception):
     def __init__(self, message):
@@ -44,12 +44,16 @@ async def generate_gid(session, user_id):
         while len(gid) < 16:
             gid += random.choice(HEXNUMERIC_CHARACTERS)
         return gid
+
     while True:
         gid = _generate_gid()
         try:
             await aria2_tell_status(session, gid)
         except Aria2Error as ex:
-            if not (ex.error_code == 1 and ex.error_message == f'GID {gid} is not found'):
+            if (
+                ex.error_code != 1
+                or ex.error_message != f'GID {gid} is not found'
+            ):
                 raise
             return gid
 
@@ -95,7 +99,11 @@ async def aria2_add_magnet(session, user_id, link, timeout=0):
             try:
                 await aria2_remove(session, gid)
             except Aria2Error as ex:
-                if not (ex.error_code == 1 and ex.error_message == f'Active Download not found for GID#{gid}'):
+                if (
+                    ex.error_code != 1
+                    or ex.error_message
+                    != f'Active Download not found for GID#{gid}'
+                ):
                     raise
 
 async def aria2_add_directdl(session, user_id, link, filename=None, timeout=60):
